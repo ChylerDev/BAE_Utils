@@ -1,6 +1,7 @@
 build*/
 bin/
 
+some_file.wav
 \.vscode/
 target/
 Cargo.lock
