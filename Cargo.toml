@@ -16,6 +16,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 bae_types = { git = "https://github.com/ChylerDev/BAE_Types", branch = "master" }
+bae_sf = { git = "https://github.com/ChylerDev/BAE_SF", branch = "master" }
 wav = "0.4"
 
 [dev-dependencies]
