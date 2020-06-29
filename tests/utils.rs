@@ -6,11 +6,11 @@ mod tests {
     use std::fs::File;
 
     const SAMPLE_RATE: usize = 48_000;
-    const INV_SAMPLE_RATE: MathT = 1.0 / SAMPLE_RATE as MathT;
+    const INV_SAMPLE_RATE: Math = 1.0 / SAMPLE_RATE as Math;
 
     #[test]
     fn test_write_wav() -> Result<(), ()> {
-        let mut t = SampleTrackT::new();
+        let mut t = SamplerackT::new();
 
         for i in 0..16 {
             t.push((2.0 * std::f32::consts::PI * 440.0 * i as f32 * INV_SAMPLE_RATE as f32).sin());
@@ -19,7 +19,7 @@ mod tests {
         std::fs::create_dir_all(".junk/utils").unwrap();
         WaveWriteOptions::new()
             .bps(24)?
-            .r(SAMPLE_RATE as MathT)
+            .r(SAMPLE_RATE as Math)
             .clip(true)
             .write(
                 vec![t],
@@ -44,34 +44,34 @@ mod tests {
 
     //     let mut r = MonoResampler::new(
     //         sam.clone(),
-    //         SAMPLE_RATE as MathT,
-    //         SAMPLE_RATE as MathT / 2.0,
+    //         SAMPLE_RATE as Math,
+    //         SAMPLE_RATE as Math / 2.0,
     //         0,
     //         0,
     //     );
     //     for i in 0..7 {
     //         let s = r.process();
 
-    //         assert!(float_equal(s, i as SampleT / 2.0, std::f32::EPSILON, |x| x.abs()));
+    //         assert!(float_equal(s, i as Sample / 2.0, std::f32::EPSILON, |x| x.abs()));
     //     }
 
     //     let mut r = MonoResampler::new(
     //         sam.clone(),
-    //         SAMPLE_RATE as MathT,
-    //         SAMPLE_RATE as MathT * 2.0,
+    //         SAMPLE_RATE as Math,
+    //         SAMPLE_RATE as Math * 2.0,
     //         0,
     //         0,
     //     );
     //     for i in 0..2 {
     //         let s = r.process();
 
-    //         assert!(float_equal(s, (i * 2) as SampleT, std::f32::EPSILON, |x| x.abs()));
+    //         assert!(float_equal(s, (i * 2) as Sample, std::f32::EPSILON, |x| x.abs()));
     //     }
 
     //     let mut r = MonoResampler::new(
     //         sam.clone(),
-    //         SAMPLE_RATE as MathT,
-    //         SAMPLE_RATE as MathT,
+    //         SAMPLE_RATE as Math,
+    //         SAMPLE_RATE as Math,
     //         0,
     //         0,
     //     );
@@ -79,13 +79,13 @@ mod tests {
     //     for i in 0..7 {
     //         let s = r.process();
 
-    //         assert!(float_equal(s, i as SampleT / 2.0, std::f32::EPSILON, |x| x.abs()));
+    //         assert!(float_equal(s, i as Sample / 2.0, std::f32::EPSILON, |x| x.abs()));
     //     }
 
     //     let mut r = MonoResampler::new(
     //         sam.clone(),
-    //         SAMPLE_RATE as MathT,
-    //         SAMPLE_RATE as MathT * 2.0,
+    //         SAMPLE_RATE as Math,
+    //         SAMPLE_RATE as Math * 2.0,
     //         0,
     //         0,
     //     );

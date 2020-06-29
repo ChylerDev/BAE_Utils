@@ -3,7 +3,7 @@
 //! Module for audio related functions and types that make life easier.
 
 #![warn(missing_docs)]
-#![doc(html_root_url = "https://docs.rs/bae_utils/0.14.0")]
+#![doc(html_root_url = "https://docs.rs/bae_utils/0.14.1")]
 
 use bae_types::*;
 
@@ -61,28 +61,28 @@ where
 }
 
 /// Converts a given sample count to seconds.
-pub fn samples_to_seconds(s: usize, r: MathT) -> std::time::Duration {
+pub fn samples_to_seconds(s: usize, r: Math) -> std::time::Duration {
     std::time::Duration::from_secs_f64(s as f64 * r as f64)
 }
 
 /// Converts the given duration to samples, rounded to the nearest sample.
-pub fn seconds_to_samples(s: std::time::Duration, r: MathT) -> usize {
+pub fn seconds_to_samples(s: std::time::Duration, r: Math) -> usize {
     (s.as_secs_f64() * r as f64).round() as usize
 }
 
 /// Converts from a linear gain value to a decibel (dBFS) value.
-pub fn linear_to_db(g: MathT) -> MathT {
+pub fn linear_to_db(g: Math) -> Math {
     20.0 * g.log10()
 }
 
 /// Converts from a decibel (dBFS) to a linear gain value
-pub fn db_to_linear(db: MathT) -> MathT {
+pub fn db_to_linear(db: Math) -> Math {
     10.0_f64.powf(db / 20.0)
 }
 
 /// Normalizes the given audio track to have a peak value at the given dBFS
 /// value.
-pub fn normalize(db: MathT, t: &mut SampleTrackT) {
+pub fn normalize(db: Math, t: &mut SampleTrack) {
     let y = t.clone();
     let mut dc = 0.0;
 
@@ -90,7 +90,7 @@ pub fn normalize(db: MathT, t: &mut SampleTrackT) {
         dc += s;
     }
 
-    dc /= y.len() as SampleT;
+    dc /= y.len() as Sample;
 
     let mut max = 0.0;
 
@@ -100,7 +100,7 @@ pub fn normalize(db: MathT, t: &mut SampleTrackT) {
         }
     }
 
-    let factor = db_to_linear(db) as SampleT / max;
+    let factor = db_to_linear(db) as Sample / max;
 
     for s in t {
         *s = (*s - dc) * factor;
@@ -114,7 +114,7 @@ pub fn normalize(db: MathT, t: &mut SampleTrackT) {
 ///
 /// * `s` - The source to read from.
 /// * Returned value is a [`std::io::Result`] with the `Ok` data being a tuple
-/// of a [`wav::Header`] and a vector of [`SampleTrackT`]s.
+/// of a [`wav::Header`] and a vector of [`SampleTrack`]s.
 ///
 /// # Errors
 ///
@@ -123,14 +123,14 @@ pub fn normalize(db: MathT, t: &mut SampleTrackT) {
 ///
 /// [`std::io::Result`]: https://doc.rust-lang.org/std/io/type.Result.html
 /// [`wav::Header`]: https://docs.rs/wav/0.4.0/wav/struct.Header.html
-/// [`SampleTrackT`]: https://docs.rs/bae_types/0.14.0/bae_types/type.SampleTrackT.html
+/// [`SampleTrack`]: https://docs.rs/bae_types/0.14.1/bae_types/type.SampleTrack.html
 /// [`wav::read`]: https://docs.rs/wav/0.4.0/wav/fn.read.html
-pub fn read_wav(s: &mut dyn std::io::Read) -> std::io::Result<(wav::Header, Vec<SampleTrackT>)> {
+pub fn read_wav(s: &mut dyn std::io::Read) -> std::io::Result<(wav::Header, Vec<SampleTrack>)> {
     let (h, bd) = wav::read(s)?;
 
     let mut tracks = Vec::new();
     for _ in 0..h.channel_count {
-        tracks.push(SampleTrackT::new());
+        tracks.push(SampleTrack::new());
     }
 
     match bd {
@@ -168,7 +168,7 @@ pub fn read_wav(s: &mut dyn std::io::Read) -> std::io::Result<(wav::Header, Vec<
 #[derive(Default)]
 pub struct WaveWriteOptions {
     bps: u16,
-    r: MathT,
+    r: Math,
     clip: bool,
 }
 
@@ -191,7 +191,7 @@ impl WaveWriteOptions {
     }
 
     /// Sets the sampling rate.
-    pub fn r<'a>(&'a mut self, r: MathT) -> &'a mut WaveWriteOptions {
+    pub fn r<'a>(&'a mut self, r: Math) -> &'a mut WaveWriteOptions {
         self.r = r;
         self
     }
@@ -224,7 +224,7 @@ impl WaveWriteOptions {
     /// # use bae_utils::*;
     /// # use bae_types::*;
     ///
-    /// let mut t = SampleTrackT::new();
+    /// let mut t = SampleTrack::new();
     /// let mut opt = WaveWriteOptions::new();
     ///
     /// /* snip */
@@ -235,7 +235,7 @@ impl WaveWriteOptions {
     /// [`wav::write`]: https://docs.rs/wav/0.4.0/wav/fn.write.html
     pub fn write(
         &self,
-        mut tracks: Vec<SampleTrackT>,
+        mut tracks: Vec<SampleTrack>,
         d: &mut dyn std::io::Write,
     ) -> std::io::Result<()> {
         use std::io::{Error, ErrorKind};

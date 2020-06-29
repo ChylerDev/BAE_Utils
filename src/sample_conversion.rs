@@ -9,57 +9,57 @@
 
 use super::*;
 
-/// Converts a u8 8-bit sample to a `SampleT`.
-pub fn sample_from_u8(v: u8) -> SampleT {
-    (v as SampleT - 128.0) / 128.0
+/// Converts a u8 8-bit sample to a `Sample`.
+pub fn sample_from_u8(v: u8) -> Sample {
+    (v as Sample - 128.0) / 128.0
 }
-/// Converts a raw byte to a `SampleT`.
-pub fn sample_from_u8_bytes(v: [u8; 1]) -> SampleT {
-    (v[0] as SampleT - 128.0) / 128.0
+/// Converts a raw byte to a `Sample`.
+pub fn sample_from_u8_bytes(v: [u8; 1]) -> Sample {
+    (v[0] as Sample - 128.0) / 128.0
 }
 
-/// Converts a `SampleT` to an `u8`.
-pub fn sample_to_u8(s: SampleT) -> u8 {
+/// Converts a `Sample` to an `u8`.
+pub fn sample_to_u8(s: Sample) -> u8 {
     (s * 128.0 + 128.0).round() as u8
 }
-/// Converts a `SampleT` to a raw little-endian byte.
-pub fn sample_to_u8_bytes(s: SampleT) -> [u8; 1] {
+/// Converts a `Sample` to a raw little-endian byte.
+pub fn sample_to_u8_bytes(s: Sample) -> [u8; 1] {
     [sample_to_u8(s)]
 }
 
-/// Converts an i16 16-bit sample to a `SampleT`.
-pub fn sample_from_i16(v: i16) -> SampleT {
-    v as SampleT / ((1 << 15) as SampleT - 1.0)
+/// Converts an i16 16-bit sample to a `Sample`.
+pub fn sample_from_i16(v: i16) -> Sample {
+    v as Sample / ((1 << 15) as Sample - 1.0)
 }
-/// Converts raw bytes to a `SampleT`.
-pub fn sample_from_i16_bytes(v: [u8; 2]) -> SampleT {
-    (i16::from_le_bytes(v) as SampleT) / ((1 << 15) as SampleT - 1.0)
+/// Converts raw bytes to a `Sample`.
+pub fn sample_from_i16_bytes(v: [u8; 2]) -> Sample {
+    (i16::from_le_bytes(v) as Sample) / ((1 << 15) as Sample - 1.0)
 }
 
-/// Converts a `SampleT` to an `i16`.
-pub fn sample_to_i16(s: SampleT) -> i16 {
-    (s * ((1 << 15) as SampleT - 1.0)).round() as i16
+/// Converts a `Sample` to an `i16`.
+pub fn sample_to_i16(s: Sample) -> i16 {
+    (s * ((1 << 15) as Sample - 1.0)).round() as i16
 }
-/// Converts a `SampleT` to raw little-endian bytes.
-pub fn sample_to_i16_bytes(s: SampleT) -> [u8; 2] {
+/// Converts a `Sample` to raw little-endian bytes.
+pub fn sample_to_i16_bytes(s: Sample) -> [u8; 2] {
     sample_to_i16(s).to_le_bytes()
 }
 
-/// Converts an i32 24-bit sample to a `SampleT`.
-pub fn sample_from_i24(v: i32) -> SampleT {
-    v as SampleT / ((1 << 23) as SampleT - 1.0)
+/// Converts an i32 24-bit sample to a `Sample`.
+pub fn sample_from_i24(v: i32) -> Sample {
+    v as Sample / ((1 << 23) as Sample - 1.0)
 }
-/// Converts raw bytes to a `SampleT`.
-pub fn sample_from_i24_bytes(v: [u8; 3]) -> SampleT {
-    (i32::from_le_bytes([v[0], v[1], v[2], 0]) as SampleT) / ((1 << 23) as SampleT - 1.0)
+/// Converts raw bytes to a `Sample`.
+pub fn sample_from_i24_bytes(v: [u8; 3]) -> Sample {
+    (i32::from_le_bytes([v[0], v[1], v[2], 0]) as Sample) / ((1 << 23) as Sample - 1.0)
 }
 
-/// Converts a `SampleT` to an `i24`.
-pub fn sample_to_i24(s: SampleT) -> i32 {
-    (s * ((1 << 23) as SampleT - 1.0)).round() as i32
+/// Converts a `Sample` to an `i24`.
+pub fn sample_to_i24(s: Sample) -> i32 {
+    (s * ((1 << 23) as Sample - 1.0)).round() as i32
 }
-/// Converts a `SampleT` to raw little-endian bytes.
-pub fn sample_to_i24_bytes(s: SampleT) -> [u8; 3] {
+/// Converts a `Sample` to raw little-endian bytes.
+pub fn sample_to_i24_bytes(s: Sample) -> [u8; 3] {
     let i = sample_to_i24(s).to_le_bytes();
 
     [i[0], i[1], i[2]]
