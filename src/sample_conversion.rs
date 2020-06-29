@@ -11,16 +11,16 @@ use super::*;
 
 /// Converts a u8 8-bit sample to a `Sample`.
 pub fn sample_from_u8(v: u8) -> Sample {
-    (v as Sample - 128.0) / 128.0
+    Sample((v as FastMath - 128.0) / 128.0)
 }
 /// Converts a raw byte to a `Sample`.
 pub fn sample_from_u8_bytes(v: [u8; 1]) -> Sample {
-    (v[0] as Sample - 128.0) / 128.0
+    Sample((v[0] as FastMath - 128.0) / 128.0)
 }
 
 /// Converts a `Sample` to an `u8`.
 pub fn sample_to_u8(s: Sample) -> u8 {
-    (s * 128.0 + 128.0).round() as u8
+    (s.0 * 128.0 + 128.0).round() as u8
 }
 /// Converts a `Sample` to a raw little-endian byte.
 pub fn sample_to_u8_bytes(s: Sample) -> [u8; 1] {
@@ -29,16 +29,16 @@ pub fn sample_to_u8_bytes(s: Sample) -> [u8; 1] {
 
 /// Converts an i16 16-bit sample to a `Sample`.
 pub fn sample_from_i16(v: i16) -> Sample {
-    v as Sample / ((1 << 15) as Sample - 1.0)
+    Sample(v as FastMath / ((1 << 15) as FastMath - 1.0))
 }
 /// Converts raw bytes to a `Sample`.
 pub fn sample_from_i16_bytes(v: [u8; 2]) -> Sample {
-    (i16::from_le_bytes(v) as Sample) / ((1 << 15) as Sample - 1.0)
+    Sample((i16::from_le_bytes(v) as FastMath) / ((1 << 15) as FastMath - 1.0))
 }
 
 /// Converts a `Sample` to an `i16`.
 pub fn sample_to_i16(s: Sample) -> i16 {
-    (s * ((1 << 15) as Sample - 1.0)).round() as i16
+    (s.0 * ((1 << 15) as FastMath - 1.0)).round() as i16
 }
 /// Converts a `Sample` to raw little-endian bytes.
 pub fn sample_to_i16_bytes(s: Sample) -> [u8; 2] {
@@ -47,16 +47,16 @@ pub fn sample_to_i16_bytes(s: Sample) -> [u8; 2] {
 
 /// Converts an i32 24-bit sample to a `Sample`.
 pub fn sample_from_i24(v: i32) -> Sample {
-    v as Sample / ((1 << 23) as Sample - 1.0)
+    Sample(v as FastMath / ((1 << 23) as FastMath - 1.0))
 }
 /// Converts raw bytes to a `Sample`.
 pub fn sample_from_i24_bytes(v: [u8; 3]) -> Sample {
-    (i32::from_le_bytes([v[0], v[1], v[2], 0]) as Sample) / ((1 << 23) as Sample - 1.0)
+    Sample((i32::from_le_bytes([v[0], v[1], v[2], 0]) as FastMath) / ((1 << 23) as FastMath - 1.0))
 }
 
 /// Converts a `Sample` to an `i24`.
 pub fn sample_to_i24(s: Sample) -> i32 {
-    (s * ((1 << 23) as Sample - 1.0)).round() as i32
+    (s.0 * ((1 << 23) as FastMath - 1.0)).round() as i32
 }
 /// Converts a `Sample` to raw little-endian bytes.
 pub fn sample_to_i24_bytes(s: Sample) -> [u8; 3] {

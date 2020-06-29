@@ -3,7 +3,7 @@ name = "bae_utils"
 description = "Common utilities used throughout the Broad Audio Engine."
 repository = "https://github.com/ChylerDev/BAE_Utils"
 license = "MIT"
-version = "0.14.1" # don't forget to fix version numbers in README.md documentation links
+version = "0.14.2" # don't forget to fix version numbers in README.md documentation links
 authors = ["Chyler Morrison <contact@chyler.info>"]
 edition = "2018"
 keywords = [ "audio", "audio-processing" ]
@@ -15,7 +15,8 @@ is-it-maintained-open-issues = { repository = "ChylerDev/BAE" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-bae_types = { git = "https://github.com/ChylerDev/BAE_Types", branch = "master", version = "0.14.1" }
+bae_types = { git = "https://github.com/ChylerDev/BAE_Types", branch = "master", version = "^0.14" }
+wav = "0.4"
 
 [dev-dependencies]
 version-sync = "0.9"

@@ -3,14 +3,15 @@
 //! Module for audio related functions and types that make life easier.
 
 #![warn(missing_docs)]
-#![doc(html_root_url = "https://docs.rs/bae_utils/0.14.1")]
+#![doc(html_root_url = "https://docs.rs/bae_utils/0.14.2")]
+
+extern crate wav;
 
 use bae_types::*;
 
 use std::ops::{Add, Div, Mul, Sub};
 use std::vec::Vec;
 
-pub mod resampler;
 pub mod sample_conversion;
 
 pub use sample_conversion::*;
@@ -21,7 +22,7 @@ pub fn lerp<T>(x: T, x1: T, x2: T, y1: T, y2: T) -> T
 where
     T: Copy + Sized + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
 {
-    // y =     m            * (x-x1)   + y1
+    // y =     m            * (x - x1) + y1
     ((y2 - y1) / (x2 - x1)) * (x - x1) + y1
 }
 
@@ -62,48 +63,46 @@ where
 
 /// Converts a given sample count to seconds.
 pub fn samples_to_seconds(s: usize, r: Math) -> std::time::Duration {
-    std::time::Duration::from_secs_f64(s as f64 * r as f64)
+    std::time::Duration::from_secs_f64(s as f64 * r.0 as f64)
 }
 
 /// Converts the given duration to samples, rounded to the nearest sample.
 pub fn seconds_to_samples(s: std::time::Duration, r: Math) -> usize {
-    (s.as_secs_f64() * r as f64).round() as usize
+    (s.as_secs_f64() * r.0 as f64).round() as usize
 }
 
 /// Converts from a linear gain value to a decibel (dBFS) value.
 pub fn linear_to_db(g: Math) -> Math {
-    20.0 * g.log10()
+    Math(20.0 * g.0.log10())
 }
 
 /// Converts from a decibel (dBFS) to a linear gain value
 pub fn db_to_linear(db: Math) -> Math {
-    10.0_f64.powf(db / 20.0)
+    Math(10.0_f64.powf(db.0 / 20.0))
 }
 
 /// Normalizes the given audio track to have a peak value at the given dBFS
 /// value.
 pub fn normalize(db: Math, t: &mut SampleTrack) {
-    let y = t.clone();
+    // Calculate DC offset
     let mut dc = 0.0;
-
-    for s in &y {
-        dc += s;
+    for s in t.iter() {
+        dc += s.0;
     }
+    dc /= t.len() as FastMath;
 
-    dc /= y.len() as Sample;
-
+    // Find the absolute maximum value (after DC-offset is removed)
     let mut max = 0.0;
-
-    for s in y {
-        if (s - dc).abs() > max {
-            max = (s - dc).abs();
+    for s in t.iter() {
+        if (s.0 - dc).abs() > max {
+            max = (s.0 - dc).abs();
         }
     }
 
-    let factor = db_to_linear(db) as Sample / max;
-
-    for s in t {
-        *s = (*s - dc) * factor;
+    // Normalize the data
+    let factor = db_to_linear(db).0 as FastMath / max;
+    for s in t.iter_mut() {
+        (*s).0 = ((*s).0 - dc) * factor;
     }
 }
 
@@ -255,10 +254,10 @@ impl WaveWriteOptions {
             }
             if self.clip {
                 for s in t {
-                    if *s > 1.0 {
-                        *s = 1.0;
-                    } else if *s < -1.0 {
-                        *s = -1.0;
+                    if (*s).0 > 1.0 {
+                        (*s).0 = 1.0;
+                    } else if (*s).0 < -1.0 {
+                        (*s).0 = -1.0;
                     }
                 }
             }
@@ -275,7 +274,7 @@ impl WaveWriteOptions {
                 }
 
                 wav::write(
-                    wav::Header::new(1, tracks.len() as u16, self.r as u32, self.bps),
+                    wav::Header::new(1, tracks.len() as u16, self.r.0 as u32, self.bps),
                     wav::BitDepth::Eight(v),
                     d,
                 )?;
@@ -290,7 +289,7 @@ impl WaveWriteOptions {
                 }
 
                 wav::write(
-                    wav::Header::new(1, tracks.len() as u16, self.r as u32, self.bps),
+                    wav::Header::new(1, tracks.len() as u16, self.r.0 as u32, self.bps),
                     wav::BitDepth::Sixteen(v),
                     d,
                 )?;
@@ -305,7 +304,7 @@ impl WaveWriteOptions {
                 }
 
                 wav::write(
-                    wav::Header::new(1, tracks.len() as u16, self.r as u32, self.bps),
+                    wav::Header::new(1, tracks.len() as u16, self.r.0 as u32, self.bps),
                     wav::BitDepth::TwentyFour(v),
                     d,
                 )?;
