@@ -15,7 +15,7 @@ is-it-maintained-open-issues = { repository = "ChylerDev/BAE" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-bae_types = { git = "https://github.com/ChylerDev/BAE_Types", branch = "master", version = "^0.14" }
+bae_types = { git = "https://github.com/ChylerDev/BAE_Types", branch = "master", version = "0.14.2" }
 wav = "0.4"
 
 [dev-dependencies]
